@@ -29,6 +29,16 @@ description = ""
 authors = ["Anton Rösler"]
 readme = "README.md"
 
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.38.0"
+streamlit-chat = "^0.1.1"
+replicate = "^0.32.1"
+pydantic = "^2.8.2"
+pydantic-settings = "^2.4.0"
+pymongo = { version = "^4.8.0", extras = ["srv"] }
+
+
 [tool.hatch.metadata]
 allow-direct-references = true
 
