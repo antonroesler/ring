@@ -1,0 +1,33 @@
+[project]
+name = "ring"
+version = "0.1.0"
+description = "Add your description here"
+authors = [{ name = "Anton Rösler", email = "anton.roesler@de.bosch.com" }]
+dependencies = [
+    "streamlit>=1.38.0",
+    "streamlit-chat>=0.1.1",
+    "replicate>=0.32.1",
+    "pydantic>=2.8.2",
+    "pydantic-settings>=2.4.0",
+    "pymongo==4.7.3",
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ring"]
+
+[tool.rye.scripts]
+"app" = "rye run streamlit run src/ring/main.py"
+"mongo" = "rye run python src/ring/mongo.py"
