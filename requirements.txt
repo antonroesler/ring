@@ -9,7 +9,7 @@
 #   generate-hashes: false
 #   universal: false
 
--e file:.
+# -e file:.
 altair==5.4.1
     # via streamlit
 annotated-types==0.7.0
