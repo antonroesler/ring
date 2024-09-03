@@ -19,6 +19,13 @@ anyio==4.4.0
 attrs==24.2.0
     # via jsonschema
     # via referencing
+azure-core==1.30.2
+    # via azure-cosmos
+    # via azure-identity
+azure-cosmos==4.7.0
+    # via ring
+azure-identity==1.17.1
+    # via ring
 blinker==1.8.2
     # via streamlit
 cachetools==5.5.0
@@ -27,12 +34,16 @@ certifi==2024.8.30
     # via httpcore
     # via httpx
     # via requests
+cffi==1.17.0
+    # via cryptography
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via streamlit
-dnspython==2.6.1
-    # via pymongo
+cryptography==43.0.0
+    # via azure-identity
+    # via msal
+    # via pyjwt
 exceptiongroup==1.2.2
     # via anyio
 gitdb==4.0.11
@@ -62,6 +73,11 @@ markupsafe==2.1.5
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
+msal==1.30.0
+    # via azure-identity
+    # via msal-extensions
+msal-extensions==1.2.0
+    # via azure-identity
 narwhals==1.6.0
     # via altair
 numpy==1.24.4
@@ -77,10 +93,14 @@ pandas==2.0.3
     # via streamlit
 pillow==10.4.0
     # via streamlit
+portalocker==2.10.1
+    # via msal-extensions
 protobuf==5.28.0
     # via streamlit
 pyarrow==17.0.0
     # via streamlit
+pycparser==2.22
+    # via cffi
 pydantic==2.8.2
     # via pydantic-settings
     # via replicate
@@ -93,8 +113,8 @@ pydeck==0.9.1
     # via streamlit
 pygments==2.18.0
     # via rich
-pymongo==4.8.0
-    # via ring
+pyjwt==2.9.0
+    # via msal
 python-dateutil==2.9.0.post0
     # via pandas
 python-dotenv==1.0.1
@@ -107,6 +127,8 @@ referencing==0.35.1
 replicate==0.32.1
     # via ring
 requests==2.32.3
+    # via azure-core
+    # via msal
     # via streamlit
 rich==13.8.0
     # via streamlit
@@ -114,6 +136,7 @@ rpds-py==0.20.0
     # via jsonschema
     # via referencing
 six==1.16.0
+    # via azure-core
     # via python-dateutil
 smmap==5.0.1
     # via gitdb
@@ -134,6 +157,9 @@ tornado==6.4.1
 typing-extensions==4.12.2
     # via altair
     # via anyio
+    # via azure-core
+    # via azure-cosmos
+    # via azure-identity
     # via pydantic
     # via pydantic-core
     # via replicate

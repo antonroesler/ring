@@ -1,45 +1,57 @@
-from typing import Type
+from typing import Any, Type
+from uuid import uuid4
 from pydantic import BaseModel
 from ring.db.client import get_client
 from ring.conf import settings
 
 
-class MongoBaseModel:
+class CosmosModel(BaseModel):
+    id: str | None = None
+
+    def model_post_init(self, __context: Any) -> None:
+        if self.id is None:
+            self.id = str(uuid4())
+        return super().model_post_init(__context)
+
+
+class CosmosContainer:
     def __init__(self):
-        self.Type: Type[BaseModel]
-        self.key: str
+        self.Type: Type[CosmosModel]
+        self.key: str = "id"
         self.client = get_client()
-        self.db = self.client[settings.db_name]
-        self.collection_name = self.__class__.__name__.lower()
-        self.collection = self.db[self.collection_name]
+        self.db = self.client.get_database_client(settings.db_name)
+        self.container_name = self.__class__.__name__.lower()
+        self.container = self.db.get_container_client(self.container_name)
         print(f"Connected to {settings.db_name} database")
-        print(f"Using collection {self.collection_name}")
+        print(f"Using container {self.container_name}")
 
-    def insert(self, obj: BaseModel):
+    def upsert(self, obj: CosmosModel):
         assert isinstance(obj, self.Type)
-        print(f"Inserting {obj}")
-        if self.exists(obj):
-            raise ValueError("Object already exists")
-        self.collection.insert_one(obj.model_dump())
+        self.container.upsert_item(obj.model_dump())
 
-    def exists(self, obj: BaseModel):
-        assert isinstance(obj, self.Type)
-        return (
-            self.collection.find_one({self.key: obj.model_dump()[self.key]}) is not None
-        )
-
-    def get(self, name: str):
-        obj = self.collection.find_one({self.key: name})
-        if obj is not None:
+    def get(self, id: str):
+        try:
+            obj = self.container.read_item(
+                item=id,
+                partition_key=id,
+            )
             return self.Type(**obj)
-        return None
+        except Exception:
+            return None
 
     def all(self):
-        return [self.Type(**obj) for obj in self.collection.find()]
+        return [self.Type(**obj) for obj in self.container.read_all_items()]
 
-    def delete(self, name: str):
-        self.collection.delete_one({self.key: name})
+    def delete(self, id):
+        self.container.delete_item(item=id, partition_key=id)
 
-    def update(self, name: str, obj: BaseModel):
-        assert isinstance(obj, self.Type)
-        self.collection.update_one({self.key: name}, {"$set": obj.model_dump()})
+    def query(self, filter: str):
+        query = f"SELECT * FROM c {filter}"
+        print(query)
+        return [
+            self.Type(**obj)
+            for obj in self.container.query_items(
+                query=query,
+                enable_cross_partition_query=True,
+            )
+        ]

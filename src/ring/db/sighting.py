@@ -1,8 +1,8 @@
 from pydantic import BaseModel, Field
-from ring.db.abstract import MongoBaseModel
+from ring.db.abstract import CosmosContainer, CosmosModel
 
 
-class Sighting(BaseModel):
+class Sighting(CosmosModel):
     place: str
     ring: str
     year: int = Field(..., ge=1900, le=2100)
@@ -12,37 +12,34 @@ class Sighting(BaseModel):
     minute: int = Field(..., ge=0, le=59)
 
 
-class Sightings(MongoBaseModel):
+class Sightings(CosmosContainer):
     def __init__(self):
         self.Type = Sighting
         super().__init__()
 
-    def insert(self, obj: BaseModel):
-        assert isinstance(obj, self.Type)
-        print(f"Inserting {obj}")
-        if self.exists(obj):
-            raise ValueError("Object already exists")
-        self.collection.insert_one(obj.model_dump())
 
-    def exists(self, obj: BaseModel):
-        assert isinstance(obj, Sighting)
-        return (
-            self.collection.find_one({"ring": obj.ring, "place": obj.place}) is not None
+if __name__ == "__main__":
+    sightings = Sightings()
+
+    from ring.db.rings import Ring, Rings
+    from ring.db.places import Place, Places
+    import random
+
+    all_rings = Rings().all()
+    all_places = Places().all()
+
+    x = [
+        Sighting(
+            place=random.choice(all_places).id,
+            ring=random.choice(all_rings).id,
+            year=2021,
+            month=random.randint(1, 12),
+            day=random.randint(1, 28),
+            hour=random.randint(5, 21),
+            minute=random.randint(0, 59),
         )
+        for x in range(100)
+    ]
 
-    def get(self, ring: str | None = None, place: str | None = None):
-        assert ring is not None or place is not None
-        if ring is not None:
-            obj = self.collection.find_one({"ring": ring})
-        else:
-            obj = self.collection.find_one({"place": place})
-        if obj is not None:
-            return Sighting(**obj)
-
-    def delete(self, ring, place):
-        self.collection.delete_one({"ring": ring, "place": place})
-
-    def update(self, ring: str, place: str, obj: Sighting):
-        self.collection.update_one(
-            {"ring": ring, "place": place}, {"$set": obj.model_dump()}
-        )
+    for sighting in x:
+        sightings.upsert(sighting)

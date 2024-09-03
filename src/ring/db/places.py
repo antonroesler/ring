@@ -1,17 +1,20 @@
-from ring.db.client import get_client
-from pydantic import BaseModel
-from ring.db.abstract import MongoBaseModel
+from ring.db.abstract import CosmosContainer, CosmosModel
 
 
-class Place(BaseModel):
+class Place(CosmosModel):
     name: str
     lon: float | None = None
     lat: float | None = None
     desc: str | None = None
 
 
-class Places(MongoBaseModel):
+class Places(CosmosContainer):
     def __init__(self):
         self.Type = Place
-        self.key = "name"
         super().__init__()
+
+
+if __name__ == "__main__":
+    places = Places()
+    x = places.query("WHERE c.name LIKE '%Frankfurt%'")
+    print(x)

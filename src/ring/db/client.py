@@ -1,15 +1,14 @@
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+from azure.identity import DefaultAzureCredential
+from azure.cosmos import CosmosClient
+from uuid import uuid4
 from ring.conf import settings
+
+credential = DefaultAzureCredential()
 
 
 def get_client():
     # Create a new client and connect to the server
-    client = MongoClient(
-        settings.mongo_uri,
-        server_api=ServerApi(version="1", strict=True, deprecation_errors=True),
-    )
-    print(client.admin.command("ping"))
+    client = CosmosClient(url=settings.mongo_uri, credential=credential)
     return client
 
 
@@ -17,7 +16,21 @@ if __name__ == "__main__":
     # Send a ping to confirm a successful connection
     try:
         client = get_client()
-        client.admin.command("ping")
-        print("Pinged your deployment. You successfully connected to MongoDB!")
+        db = client.get_database_client("ring-db")
+        container = db.get_container_client("brids")
+        print(dir(container))
+        x = container.read_all_items()
+        print(x)
+        for y in x:
+            print(y)
+        # query = "SELECT * FROM brids"
+        # results = list(
+        #     container.query_items(query=query, enable_cross_partition_query=True)
+        # )
+        # for item in results:
+        #     print(item)
+        #     print()
+
+        print("Connected to the database")
     except Exception as e:
         print(e)
