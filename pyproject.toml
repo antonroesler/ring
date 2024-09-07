@@ -11,6 +11,7 @@ dependencies = [
     "pydantic-settings>=2.4.0",
     "azure-identity>=1.17.1",
     "azure-cosmos>=4.7.0",
+    "streamlit-searchbox>=0.1.16",
 ]
 readme = "README.md"
 requires-python = ">=3.10"

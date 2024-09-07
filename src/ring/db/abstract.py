@@ -24,6 +24,7 @@ class CosmosContainer:
         self.container = self.db.get_container_client(self.container_name)
         print(f"Connected to {settings.db_name} database")
         print(f"Using container {self.container_name}")
+        self.full_cache = {}
 
     def upsert(self, obj: CosmosModel):
         assert isinstance(obj, self.Type)
@@ -40,7 +41,13 @@ class CosmosContainer:
             return None
 
     def all(self):
-        return [self.Type(**obj) for obj in self.container.read_all_items()]
+        if self.full_cache:
+            return list(self.full_cache.values())
+        print(f"Reading all items {self.container_name}")
+        self.full_cache = {
+            obj.get("id"): self.Type(**obj) for obj in self.container.read_all_items()
+        }
+        return list(self.full_cache.values())
 
     def delete(self, id):
         self.container.delete_item(item=id, partition_key=id)

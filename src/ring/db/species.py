@@ -5,7 +5,7 @@ from ring.db.abstract import CosmosContainer, CosmosModel
 
 class BirdSpecies(CosmosModel):
     name: str
-    name_latin: str
+    name_latin: str | None = None
 
 
 class Species(CosmosContainer):

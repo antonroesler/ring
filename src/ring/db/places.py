@@ -15,6 +15,4 @@ class Places(CosmosContainer):
 
 
 if __name__ == "__main__":
-    places = Places()
-    x = places.query("WHERE c.name LIKE '%Frankfurt%'")
-    print(x)
+    ...

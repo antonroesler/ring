@@ -1,13 +1,13 @@
 from ring.db.client import get_client
 from pydantic import BaseModel
 from ring.db.abstract import CosmosContainer, CosmosModel
+from ring.db.sighting import Sighting, Sightings
+import datetime
 
 
 class Ring(CosmosModel):
-    num: str
     species: str | None = None
-    color: str | None = None
-    desc: str | None = None
+    ring_age: int | None = None
 
 
 class Rings(CosmosContainer):
@@ -18,40 +18,62 @@ class Rings(CosmosContainer):
 
 if __name__ == "__main__":
     rings = Rings()
-
-    a = [
-        Ring(num="DEWAG 1234", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="DEWAG 1235", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="DEWAG 1236", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="DEWAG 1237", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="DEWAG 1238", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="DEWAG 1239", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="DEWAG 1240", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="DEWAG 1241", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="DEWAG 1242", species="69d0eda0-e9c2-46fb-abd3-cfb104f89055"),
-        Ring(num="CY0032", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="CY0033", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="A1234", species="d70807a1-7f9e-4282-85bc-456376a47994"),
-        Ring(num="A1235", species="d70807a1-7f9e-4282-85bc-456376a47994"),
-        Ring(num="A1236", species="d70807a1-7f9e-4282-85bc-456376a47994"),
-        Ring(num="A1237", species="d70807a1-7f9e-4282-85bc-456376a47994"),
-        Ring(num="A1238", species="d70807a1-7f9e-4282-85bc-456376a47994"),
-        Ring(num="A1239", species="d70807a1-7f9e-4282-85bc-456376a47994"),
-        Ring(num="DEX000947362", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947363", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947364", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947365", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947366", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947367", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947368", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947369", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947370", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947371", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947372", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947373", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947374", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947375", species="320dca25-45f5-496e-a967-066faa264f60"),
-        Ring(num="DEX000947376", species="320dca25-45f5-496e-a967-066faa264f60"),
-    ]
-    for ring in a:
-        rings.upsert(ring)
+    with open("/Users/RNS4ABT/mystuff/gaense/sightings.csv") as f:
+        for line in f:
+            (
+                _,
+                Art,
+                Nummer,
+                Ablesung,
+                Datum,
+                Ort,
+                strAge,
+                Gruppe,
+                Bemerkung,
+                Melder,
+                gemeldet,
+            ) = line.strip().split("|")
+            r = Ring(
+                id=Nummer,
+                species=Art,
+                ring_age=int(float(strAge)) if strAge != "" else None,
+            )
+            try:
+                date = datetime.datetime.strptime(
+                    Datum.strip().split(" ")[0], "%Y-%m-%d"
+                )
+            except ValueError:
+                continue
+            print(Gruppe)
+            g = None
+            ag = None
+            if str(Gruppe).isdigit():
+                g = int(Gruppe)
+            elif str(Gruppe).split(" ")[0].isdigit():
+                g = int(str(Gruppe).split(" ")[0])
+                if (
+                    str(Gruppe)
+                    .split(" ")[1]
+                    .replace("(", "")
+                    .replace(")", "")
+                    .isdigit()
+                ):
+                    ag = int(
+                        str(Gruppe).split(" ")[1].replace("(", "").replace(")", "")
+                    )
+            s = Sighting(
+                reading=Ablesung,
+                place=Ort,
+                species=Art,
+                ring=r.id,
+                year=None if not date else date.year,
+                month=None if not date else date.month,
+                day=None if not date else date.day,
+                melded=True if gemeldet == "" else False,
+                melder=Melder if Melder != "" else None,
+                comment=Bemerkung if Bemerkung != "" else None,
+                group=g,
+                area_group=ag,
+            )
+            print(r)
+            print(s)

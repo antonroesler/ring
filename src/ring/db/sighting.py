@@ -1,15 +1,37 @@
 from pydantic import BaseModel, Field
 from ring.db.abstract import CosmosContainer, CosmosModel
 
+from enum import Enum
+
+
+class Habitat(str, Enum):
+    WASSER = "wasser"
+    LAND = "land"
+    AIR = "air"
+    UNKNOWN = "-"
+
+
+class LivingType(str, Enum):
+    MAUSER = "mausernd"
+    BRUT = "brütend"
+    NOT_BRUT = "nicht-brütend"
+    UNKNOWN = "-"
+
 
 class Sighting(CosmosModel):
     place: str
-    ring: str
+    reading: str
+    ring: str | None = None
     year: int = Field(..., ge=1900, le=2100)
     month: int = Field(..., ge=1, le=12)
     day: int = Field(..., ge=1, le=31)
-    hour: int = Field(..., ge=0, le=23)
-    minute: int = Field(..., ge=0, le=59)
+    group: int | None = None
+    area_group: int | None = None
+    habitat: Habitat = Habitat.UNKNOWN
+    living_type: LivingType = LivingType.UNKNOWN
+    comment: str | None = None
+    melder: str | None = None
+    melded: bool = False
 
 
 class Sightings(CosmosContainer):
