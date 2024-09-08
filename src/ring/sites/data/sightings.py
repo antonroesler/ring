@@ -17,10 +17,14 @@ event = st.dataframe(
     selection_mode="multi-row",
 )
 
-delete_btn = st.button(
-    "Löschen", key="delete_btn", help="Löscht die ausgewählten Einträge"
-)
-edit_btn = st.button("Bearbeiten", key="edit_btn")
+btn_col1, btn_col2 = st.columns(2)
+
+with btn_col1:
+    delete_btn = st.button(
+        "Löschen", key="delete_btn", help="Löscht die ausgewählten Einträge"
+    )
+with btn_col2:
+    edit_btn = st.button("Bearbeiten", key="edit_btn")
 
 if delete_btn:
     if event.selection.rows:
