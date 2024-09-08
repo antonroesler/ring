@@ -4,7 +4,7 @@ pages = {
     "Erfassung": [
         st.Page("sites/new/add_sighting_simple.py", title="Neue Ablesung"),
         st.Page("sites/new/edit_sighting.py", title="Ablesung Bearbeiten"),
-        st.Page("sites/new/edit_place.py", title="ORT Bearbeiten"),
+        st.Page("sites/new/edit_place.py", title="Ort Bearbeiten"),
     ],
     "Datenbank": [
         st.Page("sites/data/sightings.py", title="Ablesungen"),
