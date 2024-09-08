@@ -1,7 +1,6 @@
 import datetime
 from enum import Enum
 from ring.db.abstract import CosmosContainer, CosmosModel
-from pydantic import BaseModel
 from ring.db.places import Place, Places
 from ring.db.species import BirdSpecies, Species
 
@@ -56,6 +55,25 @@ class Birds(CosmosContainer):
         bird.sightings.append(sighting)
         self.upsert(bird)
 
+    def delete_sightings(self, bird_id: str, sighting_ids: list[str]):
+        print(f"Deleting {sighting_ids} from {bird_id}")
+        bird: Bird | None = self.get(bird_id)
+        if bird is None:
+            print(f"Bird {bird_id} not found")
+            return
+        print(f"Found bird {bird_id}")
+        print(f"Before deletion: {bird.sightings}")
+        bird.sightings = [s for s in bird.sightings if s.id not in sighting_ids]
+        print(f"After deletion: {bird.sightings}")
+        self.upsert(bird)
+
+    def ring_query(self, contains: str) -> list[Bird] | None:
+        if contains.startswith("..."):
+            return self.query(f"WHERE c.id LIKE '%{contains[3:]}'")
+        if contains.endswith("..."):
+            return self.query(f"WHERE c.id LIKE '{contains[:-3]}%'")
+        return self.query(f"WHERE c.id LIKE '%{contains}%'")
+
 
 if __name__ == "__main__":
     added_places = set()
@@ -64,8 +82,11 @@ if __name__ == "__main__":
     birds = Birds()
     places = Places()
     birds.upsert(Bird(id="unbekannt", species="unbekannt"))
-    with open("/Users/RNS4ABT/mystuff/gaense/sightings.csv") as f:
+    line_counter = 0
+    with open("/Users/RNS4ABT/mystuff/gaense/sightings_955.csv") as f:
         for line in f:
+            line_counter += 1
+            print(f"Line {line_counter}")
             (
                 _,
                 Art,
@@ -102,30 +123,6 @@ if __name__ == "__main__":
                     ag = int(
                         str(Gruppe).split(" ")[1].replace("(", "").replace(")", "")
                     )
-            if Nummer is not None and Nummer != "":
-                existing: Bird | None = birds.get(Nummer)
-                if not existing:
-                    print(f"Creating new bird {Nummer} of species {Art}")
-                    bird = Bird(
-                        id=Nummer,
-                        species=Art,
-                        ring_age=strAge if strAge != "" else None,
-                    )
-                    birds.upsert(bird)
-                else:
-                    print(f"Bird {Nummer} already exists ({Art}/{existing.species})")
-                    assert existing.species == Art
-            if Ort and Ort not in added_places:
-                print(f"Adding place {Ort}")
-                places.upsert(Place(name=Ort))
-                added_places.add(Ort)
-            if Art is None or Art == "":
-                Art = "unbekannt"
-
-            if Art and Art not in added_species:
-                print(f"Adding species {Art}")
-                species.upsert(BirdSpecies(name=Art))
-                added_species.add(Art)
 
             s = Sighting(
                 reading=Ablesung,
@@ -139,8 +136,35 @@ if __name__ == "__main__":
                 group=g,
                 area_group=ag,
             )
+
+            if Art is None or Art == "":
+                Art = "unbekannt"
             if Nummer is None or Nummer == "":
                 Nummer = "unbekannt"
 
-            birds.add_sighting(Nummer, s)
-            print(f"Adding sighting to bird {Nummer} at {Ort}")
+            if Nummer is not None and Nummer != "":
+                existing: Bird | None = birds.get(Nummer)
+                if not existing:
+                    print(f"Creating new bird {Nummer} of species {Art}")
+                    bird = Bird(
+                        id=Nummer,
+                        species=Art,
+                        ring_age=strAge if strAge != "" else None,
+                        sightings=[s],
+                    )
+                    birds.upsert(bird)
+                else:
+                    print(f"Bird {Nummer} already exists ({Art}/{existing.species})")
+                    existing.sightings.append(s)
+                    birds.upsert(existing)
+                    if not existing.species == Art:
+                        print(f"Species mismatch: {Art} != {existing.species}")
+                        print("###################################")
+            if Ort and Ort not in added_places:
+                print(f"Adding place {Ort}")
+                places.upsert(Place(name=Ort))
+                added_places.add(Ort)
+            if Art and Art not in added_species:
+                print(f"Adding new species {Art}")
+                species.upsert(BirdSpecies(name=Art))
+                added_species.add(Art)

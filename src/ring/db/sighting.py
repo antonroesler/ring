@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from ring.db.abstract import CosmosContainer, CosmosModel
 
 from enum import Enum
@@ -43,8 +43,8 @@ class Sightings(CosmosContainer):
 if __name__ == "__main__":
     sightings = Sightings()
 
-    from ring.db.rings import Ring, Rings
-    from ring.db.places import Place, Places
+    from ring.db.rings import Rings
+    from ring.db.places import Places
     import random
 
     all_rings = Rings().all()

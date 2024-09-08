@@ -1,8 +1,9 @@
 import streamlit as st
 import math
 import random
-import pandas as pd
 from ring.sites.data.cache import get_individuals, get_sightings, get_places
+
+st.set_page_config(page_title="Analyse", layout="wide", page_icon="🦆")
 
 st.write("🔎 Datenanalyse")
 
@@ -43,6 +44,7 @@ with tab2:
 
 with tab3:
     # For the top 10 places, count the number of Art that were sighted
+    st.write("Top 10 Orte")
     df = get_sightings()
     df = df[df["Ort"].isin(df["Ort"].value_counts().head(10).index)]
     df = df[["Art", "Ort", "Datum"]]
@@ -50,9 +52,6 @@ with tab3:
     df = df.sort_values(by=df.columns[0], ascending=False)
     # Create one column for each Art
     df = df.pivot(columns="Art", values="Datum").fillna(0)
-    print("BBBBB")
-    print(df.head())
-    print("BBBBB")
     st.bar_chart(df)
 
 with tab4:
@@ -65,7 +64,7 @@ with tab4:
             st.write(f"Suche nach {ring_num}")
             df = df[df["Ringnummer"].str.contains(ring_num, na=False)]
 
-        max_jitter = 0.003
+        max_jitter = 0.002
 
         def get_lat_lon(row):
             """Adds circular jitter to lat and lon"""
@@ -81,7 +80,11 @@ with tab4:
             return row
 
         # For each sighting, add the lat and lon to the df
-        df = df.apply(get_lat_lon, axis=1)
-        df = df.dropna(subset=["lat", "lon"])
+        try:
+            df = df.apply(get_lat_lon, axis=1)
+            df = df.dropna(subset=["lat", "lon"])
 
-        st.map(df, color=(255, 0, 0, 0.1), use_container_width=True)
+            st.map(df, color=(255, 0, 0, 0.1), use_container_width=True)
+        except KeyError:
+            st.write("Keine Vollständigen Daten gefunden")
+            pass

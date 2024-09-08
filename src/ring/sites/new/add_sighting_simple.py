@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_searchbox import st_searchbox
 from ring.db import (
     Species,
     Places,
@@ -10,8 +9,10 @@ from ring.db import (
     LivingType,
     Habitat,
 )
+from ring.sites.new.places import new_place
+from ring.sites.new.find_bird import find_bird
 
-st.set_page_config(layout="centered")
+st.set_page_config(page_title="Neue Ablesung", layout="centered", page_icon="🦆")
 
 print("Running APP")
 st.header("🔭 Neue Ablesung")
@@ -27,16 +28,20 @@ with st.container():
 
 all_places = Places.all()
 
+place_choice = [x.name for x in all_places]
+if "place_choice" not in st.session_state:
+    st.session_state["place_choice"] = place_choice
+
+
 place_select = st.selectbox(
-    "Ort",
-    [x.name for x in all_places],
-    key="new_place",
+    "Ort", st.session_state["place_choice"], key="new_place", index=0
 )
 
-st.button(
-    "Neuer Ort",
-    on_click=None,
-)
+bcol1, bcol2, _1, _2 = st.columns(4)
+with bcol1:
+    st.button("Neuer Ort", on_click=new_place, use_container_width=True)
+with bcol2:
+    st.button("Vogel Finden", on_click=find_bird, use_container_width=True)
 
 all_species: list[BirdSpecies] = Species.all()
 
@@ -47,14 +52,16 @@ with ring_col1:
 with ring_col2:
     ring_num = st.text_input(key="ringnum", placeholder="Ring Nummer", label="Ring")
 with ring_col3:
+    idx = 0
+    opts = ["-"] + [
+        f"{s.name} {f'- {s.name_latin}' if s.name_latin else ''}".strip()
+        for s in all_species
+    ]
+    if st.session_state.get("find_species"):
+        idx = opts.index(st.session_state["find_species"])
+
     selected_species = st.selectbox(
-        "Art",
-        [
-            f"{s.name} {f'- {s.name_latin}' if s.name_latin else ''}"
-            for s in all_species
-        ],
-        placeholder="Art auswählen",
-        key="selected_species",
+        "Art", opts, placeholder="Art auswählen", key="selected_species", index=idx
     )
 
 col1, col2, col3, col4 = st.columns(4)
@@ -94,7 +101,15 @@ bemerkung = st.text_area(key="bemerkung", placeholder="Bemerkung", label="Bemerk
 
 
 def save():
-    ring_num = reading
+    if selected_species == "-":
+        st.error("Bitte Art auswählen")
+        return
+    existing: Bird | None = Birds.get(ring_num)
+    print(f"Existing: {existing}")
+    if existing:
+        if existing.species != selected_species:
+            st.error(f"{ring_num} existiert bereits als {existing.species}")
+            return
     print(f"Saving {ring_num}")
     print(f"Species: {selected_species}")
     print(f"Place: {place_select}")
@@ -119,6 +134,9 @@ def save():
         ),
     )
     st.toast(f"Gespeichert: {selected_species} in {place_select}", icon="🦆")
+    st.session_state["find_species"] = "-"
+    st.session_state["reading"] = None
+    st.session_state["ringnum"] = None
 
 
 st.button("Speichern", type="primary", use_container_width=True, on_click=save)

@@ -1,11 +1,12 @@
 from azure.identity import DefaultAzureCredential
 from azure.cosmos import CosmosClient
-from uuid import uuid4
 from ring.conf import settings
+import streamlit as st
 
 credential = DefaultAzureCredential()
 
 
+@st.cache_resource(ttl=600)
 def get_client():
     # Create a new client and connect to the server
     client = CosmosClient(url=settings.mongo_uri, credential=credential)
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     # Send a ping to confirm a successful connection
     try:
         client = get_client()
-        db = client.get_database_client("ring-db")
+        db = client.get_database_client(settings.db_name)
         container = db.get_container_client("brids")
         print(dir(container))
         x = container.read_all_items()

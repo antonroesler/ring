@@ -1,7 +1,5 @@
-from ring.db.client import get_client
-from pydantic import BaseModel
 from ring.db.abstract import CosmosContainer, CosmosModel
-from ring.db.sighting import Sighting, Sightings
+from ring.db.sighting import Sighting
 import datetime
 
 

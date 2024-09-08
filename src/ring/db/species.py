@@ -1,5 +1,3 @@
-from ring.db.client import get_client
-from pydantic import BaseModel
 from ring.db.abstract import CosmosContainer, CosmosModel
 
 

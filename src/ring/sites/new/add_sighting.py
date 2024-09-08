@@ -1,8 +1,7 @@
 import streamlit as st
-from streamlit_searchbox import st_searchbox
 from ring.db import Species, Places, BirdSpecies, Birds, Bird, Sighting
 
-st.set_page_config(layout="centered")
+st.set_page_config(page_title="Neue Ablesung", layout="centered", page_icon="🦆")
 
 print("Running APP")
 st.header("🔭 Neue Ablesung")

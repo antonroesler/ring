@@ -54,7 +54,6 @@ class CosmosContainer:
 
     def query(self, filter: str):
         query = f"SELECT * FROM c {filter}"
-        print(query)
         return [
             self.Type(**obj)
             for obj in self.container.query_items(
