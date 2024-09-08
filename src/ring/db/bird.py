@@ -68,6 +68,7 @@ class Birds(CosmosContainer):
         self.upsert(bird)
 
     def ring_query(self, contains: str) -> list[Bird] | None:
+        contains = contains.strip().replace("…", "...")
         if contains.startswith("..."):
             return self.query(f"WHERE c.id LIKE '%{contains[3:]}'")
         if contains.endswith("..."):
