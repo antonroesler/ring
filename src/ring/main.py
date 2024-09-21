@@ -13,6 +13,9 @@ pages = {
     "Analyse": [
         st.Page("sites/analysis/main.py", title="Datenanalyse"),
     ],
+    "Debug": [
+        st.Page("header.py", title="Header"),
+    ],
 }
 
 pg = st.navigation(pages)
