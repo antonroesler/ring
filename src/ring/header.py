@@ -40,11 +40,11 @@ def st_server_props():
 
 
 def st_session_info():
-    st_runtime = st_instance_of_type(Runtime)
+    st_runtime: Runtime = st_instance_of_type(Runtime)
     # get session id from the current script runner thread
     session_id = add_script_run_ctx().streamlit_script_run_ctx.session_id
     # use the session id to retrieve the session info
-    session_info = st_runtime._get_session_info(session_id)
+    session_info = st_runtime._session_mgr.get_session_info(session_id)
     return session_info
 
 
@@ -62,11 +62,19 @@ def st_client_cookies() -> dict:
     return cookies
 
 
-st.subheader("Server Props")
-st.write(st_server_props())
+try:
+    st.subheader("Server Props")
+    st.write(st_server_props())
+except:
+    pass
 
-st.subheader("Client Headers")
-st.write(st_client_headers())
-
-st.subheader("Client Cookies")
-st.write(st_client_cookies())
+try:
+    st.subheader("Client Headers")
+    st.write(st_client_headers())
+except:
+    pass
+try:
+    st.subheader("Client Cookies")
+    st.write(st_client_cookies())
+except:
+    pass
