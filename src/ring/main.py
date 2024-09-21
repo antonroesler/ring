@@ -14,8 +14,7 @@ if user is None:
         st.Page("sites/new/add_sighting_simple.py", title="Ablesung Einreichen"),
         st.Page("sites/new/edit_sighting.py", title="Datenanfrage"),
     ]
-
-if user.role in [Role.USER, Role.OWNER, Role.ADMIN]:
+elif user.role in [Role.USER, Role.OWNER, Role.ADMIN]:
     pages["Erfassung"] = [
         st.Page("sites/new/add_sighting_simple.py", title="Neue Ablesung"),
         st.Page("sites/new/edit_sighting.py", title="Ablesung Bearbeiten"),
