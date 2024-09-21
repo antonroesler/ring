@@ -1,9 +1,7 @@
 import streamlit as st
 from ring.db.user import Role, User, Users
-from ring.auth import get_current_user, hash_email
+from ring.auth import hash_email
 
-
-st.set_page_config(page_title="Nutzerverwaltung", layout="centered", page_icon="👤")
 
 st.header("👤 Nutzerverwaltung")
 

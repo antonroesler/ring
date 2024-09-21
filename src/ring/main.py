@@ -2,6 +2,8 @@ import streamlit as st
 from ring.auth import get_current_user
 from ring.db.user import Role
 
+st.set_page_config(page_title="Vogelring", layout="centered", page_icon="🦆")
+
 user = get_current_user()
 pages = {
     "Nutzerverwaltung": [

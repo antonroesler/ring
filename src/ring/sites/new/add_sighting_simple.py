@@ -12,8 +12,6 @@ from ring.db import (
 from ring.sites.new.places import new_place
 from ring.sites.new.find_bird import find_bird
 
-st.set_page_config(page_title="Neue Ablesung", layout="centered", page_icon="🦆")
-
 print("Running APP")
 st.header("🔭 Neue Ablesung")
 
