@@ -2,7 +2,8 @@ from streamlit.runtime.runtime import Runtime
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 import hashlib
 
-from ring.db.user import User, Users
+from ring.conf import settings
+from ring.db.user import User, Users, Role
 
 MAIL_HEADER = "X-Ms-Client-Principal-Name"
 
@@ -50,6 +51,8 @@ def hash_email(email: str) -> str:
 
 def get_current_user() -> User:
     """Returns the current user."""
+    if settings.local_mode:
+        return User(username="local", role=Role.ADMIN, id=hash_email("local@local.com"))
     user_email = _get_mail_header()
     if user_email:
         return _get_user(hash_email(user_email))

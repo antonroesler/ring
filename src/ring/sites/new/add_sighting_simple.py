@@ -6,11 +6,12 @@ from ring.db import (
     Birds,
     Bird,
     Sighting,
-    LivingType,
+    LivingStatus,
     Habitat,
 )
 from ring.sites.new.places import new_place
 from ring.sites.new.find_bird import find_bird
+from ring.fields import Field
 
 print("Running APP")
 st.header("🔭 Neue Ablesung")
@@ -46,20 +47,24 @@ all_species: list[BirdSpecies] = Species.all()
 
 ring_col1, ring_col2, ring_col3 = st.columns(3)
 with ring_col1:
-    reading = st.text_input(key="reading", placeholder="Ablesung", label="Ablesung")
+    reading = st.text_input(
+        key=Field.READING.value, placeholder="Ablesung", label="Ablesung"
+    )
 with ring_col2:
-    ring_num = st.text_input(key="ringnum", placeholder="Ring Nummer", label="Ring")
+    ring_num = st.text_input(
+        key=Field.RING_NUM.value, placeholder="Ring Nummer", label="Ring"
+    )
 with ring_col3:
     idx = 0
     opts = ["-"] + [
         f"{s.name} {f'- {s.name_latin}' if s.name_latin else ''}".strip()
         for s in all_species
     ]
-    if st.session_state.get("find_species"):
-        idx = opts.index(st.session_state["find_species"])
+    if st.session_state.get(FileExistsError):
+        idx = opts.index(st.session_state[Field.SPECIES.value])
 
     selected_species = st.selectbox(
-        "Art", opts, placeholder="Art auswählen", key="selected_species", index=idx
+        "Art", opts, placeholder="Art auswählen", key=Field.SPECIES.value, index=idx
     )
 
 col1, col2, col3, col4 = st.columns(4)
@@ -74,9 +79,9 @@ with col1:
 with col2:
     selected_living_type = st.selectbox(
         "Typ",
-        [l.value for l in LivingType],
+        [l.value for l in LivingStatus],
         key="selected_living_type",
-        index=len(LivingType) - 1,
+        index=len(LivingStatus) - 1,
     )
 with col3:
     group_size = st.number_input(
@@ -123,7 +128,7 @@ def save():
             hour=time_input.hour,
             minute=time_input.minute,
             habitat=Habitat(selected_habitat),
-            living_type=LivingType(selected_living_type),
+            living_type=LivingStatus(selected_living_type),
             group=group_size,
             area_group=area_group_size,
             melder=melder.strip(),
@@ -132,9 +137,9 @@ def save():
         ),
     )
     st.toast(f"Gespeichert: {selected_species} in {place_select}", icon="🦆")
-    st.session_state["find_species"] = "-"
-    st.session_state["reading"] = None
-    st.session_state["ringnum"] = None
+    st.session_state[Field.SPECIES.value] = "-"
+    st.session_state[Field.READING.value] = None
+    st.session_state[Field.RING_NUM.value] = None
 
 
 st.button("Speichern", type="primary", use_container_width=True, on_click=save)

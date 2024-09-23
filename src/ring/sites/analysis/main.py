@@ -3,8 +3,6 @@ import math
 import random
 from ring.sites.data.cache import get_individuals, get_sightings, get_places
 
-st.set_page_config(page_title="Analyse", layout="wide", page_icon="🦆")
-
 st.write("🔎 Datenanalyse")
 
 tab1, tab2, tab3, tab4 = st.tabs(["Bsp. 1", "Bsp. 2", "Bsp. 3", "Orte"])

@@ -1,15 +1,13 @@
 import streamlit as st
+
+st.set_page_config(page_title="Vogelring", layout="wide", page_icon="🦆")
+
 from ring.auth import get_current_user
 from ring.db.user import Role
 
-st.set_page_config(page_title="Vogelring", layout="centered", page_icon="🦆")
 
 user = get_current_user()
-pages = {
-    "Nutzerverwaltung": [
-        st.Page("sites/auth/users.py", title="Nutzer"),
-    ]
-}
+pages = {}
 
 if user is None:
     pages["Besucher"] = [
@@ -19,6 +17,7 @@ if user is None:
 elif user.role in [Role.USER, Role.OWNER, Role.ADMIN]:
     pages["Erfassung"] = [
         st.Page("sites/new/add_sighting_simple.py", title="Neue Ablesung"),
+        st.Page("sites/new/add_edit_bird.py", title="Vogel Bearbeiten"),
         st.Page("sites/new/edit_sighting.py", title="Ablesung Bearbeiten"),
         st.Page("sites/new/edit_place.py", title="Ort Bearbeiten"),
     ]
@@ -29,10 +28,10 @@ elif user.role in [Role.USER, Role.OWNER, Role.ADMIN]:
     pages["Analyse"] = [
         st.Page("sites/analysis/main.py", title="Datenanalyse"),
     ]
-    pages["Debug"] = [
-        st.Page("header.py", title="Header"),
+if user.role and user.role == Role.ADMIN:
+    pages["Nutzerverwaltung"] = [
+        st.Page("sites/auth/users.py", title="Nutzer"),
     ]
-
 
 pg = st.navigation(pages)
 pg.run()

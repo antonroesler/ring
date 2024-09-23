@@ -1,8 +1,8 @@
 import streamlit as st
+
 from ring.sites.data.cache import get_sightings
 from ring.db import Birds
 
-st.set_page_config(page_title="Alle Ablesungen", layout="wide", page_icon="🦆")
 
 df = get_sightings()
 

@@ -29,6 +29,7 @@ class CosmosContainer:
     def upsert(self, obj: CosmosModel):
         assert isinstance(obj, self.Type)
         self.container.upsert_item(obj.model_dump())
+        self.full_cache[obj.id] = obj
 
     def get(self, id: str):
         try:
@@ -42,6 +43,7 @@ class CosmosContainer:
 
     def all(self):
         if self.full_cache:
+            print("Using container cache")
             return list(self.full_cache.values())
         print(f"Reading all items {self.container_name}")
         self.full_cache = {

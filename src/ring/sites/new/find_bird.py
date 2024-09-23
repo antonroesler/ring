@@ -1,10 +1,11 @@
 import streamlit as st
 from ring.db import Birds, Bird
+from ring.fields import Field
 
 
 @st.dialog("Vorschlag finden 🐦")
 def find_bird():
-    reading = st.session_state["reading"]
+    reading = st.session_state[Field.READING.value]
 
     if reading is None or len(reading) == 0:
         st.error("Bitte gebe eine Ablesung eingeben")
@@ -26,9 +27,11 @@ def find_bird():
         with col4:
             btn = st.button("Wählen", key=f"select_{bird.id}")
             if btn:
-                st.session_state["selected_bird"] = bird
-                st.session_state["ringnum"] = bird.id
-                st.session_state["find_species"] = bird.species
+                st.session_state[Field.SELECTED_BIRD.value] = bird
+                st.session_state[Field.RING_NUM.value] = bird.id
+                st.session_state[Field.SPECIES.value] = bird.species
+                st.session_state[Field.PARTNER.value] = bird.partner
+                st.session_state[Field.GENDER.value] = bird.gender
                 st.rerun()
 
 

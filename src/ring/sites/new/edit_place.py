@@ -2,7 +2,6 @@ import streamlit as st
 import time
 from ring.db import Places, Place
 
-st.set_page_config(page_title="Ort Bearbeiten", layout="wide", page_icon="✏️")
 
 st.header("✏️ Ort Bearbeiten")
 

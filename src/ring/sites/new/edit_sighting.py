@@ -4,8 +4,6 @@ from ring.db import (
     Bird,
 )
 
-st.set_page_config(page_title="Ablesung Bearbeiten", layout="wide", page_icon="🦆")
-
 
 print("Running APP")
 st.header("✏️ Ablesung Bearbeiten")

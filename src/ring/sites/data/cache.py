@@ -20,6 +20,8 @@ def get_sightings(refresh=False):
         return {
             "Art": bird.species,
             "Ringnummer": bird.id,
+            "Geschlecht": bird.gender,
+            "Partner": bird.partner,
             "Ablesung": sighting.reading,
             "Ort": sighting.place,
             "Datum": date(year=sighting.year, month=sighting.month, day=sighting.day),
