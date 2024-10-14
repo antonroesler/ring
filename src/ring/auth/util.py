@@ -3,7 +3,7 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx
 import hashlib
 
 from ring.conf import settings
-from ring.db.user import User, Users, Role
+from ring.models.user import User, Users, Role
 
 MAIL_HEADER = "X-Ms-Client-Principal-Name"
 

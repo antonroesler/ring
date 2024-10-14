@@ -1,5 +1,5 @@
 import streamlit as st
-from ring.db import Birds, Bird
+from ring.models import Birds, Bird
 from ring.fields import Field
 
 

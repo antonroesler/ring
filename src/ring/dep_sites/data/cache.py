@@ -1,4 +1,4 @@
-from ring.db import Birds, Bird, Sighting, Places, Place
+from ring.models import Birds, Bird, Sighting, Places, Place
 import pandas as pd
 import streamlit as st
 
