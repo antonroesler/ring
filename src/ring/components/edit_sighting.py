@@ -2,16 +2,9 @@ import streamlit as st
 import pandas as pd
 from ring.models.bird import Sighting, LivingStatus, Habitat
 from ring.data.saver import save_state
-    
-
-    # group: int = Field(None, alias="Kleingruppengröße")
-    # area_group: int = Field(None, alias="Gruppengröße")
-    # habitat: Habitat = Field(Habitat.UNKNOWN, alias="Habitat")
-    # living_type: LivingStatus = Field(LivingStatus.UNKNOWN, alias="Typ")
-    # comment: str = Field(None, alias="Kommentar")
-    # melder: str = Field(None, alias="Melder")
-    # melded: bool = Field(False, alias="Gemeldet")
-    # sighting_group_id: str = Field(None, alias="Gruppen ID")
+from ring.components.place_selector import place_section
+from ring.components.date_picker import date_section
+from ring import util
 
 
 @st.fragment
@@ -71,11 +64,8 @@ def form(entry=None):
         habitat_opts = [e.value for e in Habitat]
         habitat = st.selectbox("Habitat", options=habitat_opts, index=habitat_opts.index(entry.habitat) or len(Habitat)-1, key="field:habitat")
     comment = st.text_input("Kommentar", value=entry.comment, key="field:comment")
-    g1, g2 = st.columns(2)
-    with g1:
-        melder = st.text_input("Melder", value=entry.melder, key="field:melder")
-    with g2: 
-        melded = st.checkbox("Gemeldet", value=entry.melder, key="field:melded")
+    melder = st.text_input("Melder", value=entry.melder, key="field:melder")
+    melded = st.checkbox(label="Gemeldet", value=entry.melder, key="field:melded")
 
 
 
@@ -83,25 +73,11 @@ def form(entry=None):
 @st.dialog("Ablesung Bearbeiten", width="large")
 def edit_sighting_entry(entry, index=None):
     btn = st.button("Speichern", use_container_width=True)
+    place_section(entry)
+    date_section(entry)
     form(entry)
     if btn:
-        s = Sighting(
-            ring=st.session_state["field:ring"],
-            color_ring=st.session_state["field:color_ring"],
-            reading=st.session_state["field:reading"],
-            reading_color_ring=st.session_state["field:color_reading"],
-            species=st.session_state["field:species"],
-            gender=st.session_state["field:sex"],
-            age=st.session_state["field:age"],
-            partner=st.session_state["field:partner"],
-            group=st.session_state["field:group_size"],
-            area_group=st.session_state["field:area_group_size"],
-            habitat=st.session_state["field:habitat"],
-            living_type=st.session_state["field:typ"],
-            comment=st.session_state["field:comment"],
-            melder=st.session_state["field:melder"],
-            melded=st.session_state["field:melded"],
-        )
+        s = util.get_sighting_from_fields()
         if index:
             st.session_state["data"][index] = s
         save_state()

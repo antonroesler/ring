@@ -1,4 +1,5 @@
 import streamlit as st
+from ring.data.loader import load_data
 
 st.set_page_config(page_title="Vogelring", layout="wide", page_icon="🦆")
 
@@ -8,6 +9,8 @@ from ring.models.user import Role
 
 user = get_current_user()
 pages = {}
+
+load_data()
 
 if user is None:
     pages["Besucher"] = [

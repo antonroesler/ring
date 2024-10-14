@@ -52,7 +52,7 @@ data = [
     ),
 ]
 
-for x in range(7000):
+for x in range(2):
     r = "".join(random.sample(string.ascii_uppercase + string.digits, k=8))
     data.append(
         Sighting(
