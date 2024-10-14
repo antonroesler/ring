@@ -1,7 +1,7 @@
 import streamlit as st
 
 from ring.sites.data.cache import get_sightings
-from ring.db import Birds
+from ring.models import Birds
 
 
 df = get_sightings()

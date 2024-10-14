@@ -1,5 +1,5 @@
 import streamlit as st
-from ring.db import Places, Place
+from ring.models import Places, Place
 
 
 @st.dialog("Neuen Ort hinzufügen")

@@ -1,5 +1,5 @@
 import streamlit as st
-from ring.db import (
+from ring.models import (
     Birds,
     Bird,
 )

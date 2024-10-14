@@ -1,5 +1,5 @@
 import streamlit as st
-from ring.db import Species, Bird
+from ring.models import Species, Bird
 from ring.sites.new.find_bird import find_bird
 from ring.fields import Field
 from ring.sites.new.save_bird import save_bird

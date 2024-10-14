@@ -1,5 +1,5 @@
 from enum import Enum
-from ring.db.abstract import CosmosContainer, CosmosModel
+from pydantic import BaseModel
 
 
 class Role(str, Enum):
@@ -9,12 +9,12 @@ class Role(str, Enum):
     VISITOR = "VISITOR"
 
 
-class User(CosmosModel):
+class User(BaseModel):
     username: str = "new-user"
     role: Role = Role.USER
 
 
-class Users(CosmosContainer):
+class Users(BaseModel):
     def __init__(self):
         self.Type = User
         super().__init__()

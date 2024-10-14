@@ -1,5 +1,5 @@
 import streamlit as st
-from ring.db import Species, Places, BirdSpecies, Birds, Bird, Sighting
+from ring.models import Species, Places, BirdSpecies, Birds, Bird, Sighting
 
 print("Running APP")
 st.header("🔭 Neue Ablesung")
